@@ -9,17 +9,12 @@ $sock = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
 socket_set_option($sock, SOL_SOCKET, SO_REUSEPORT, 1);
 socket_bind($sock, "localhost", 6379);
 socket_listen($sock, 5);
-socket_accept($sock); // Wait for first client
 
-do {
-    $buf = socket_read($sock, 2048, PHP_NORMAL_READ);
-    if (!$buf = trim($buf)) {
-        continue;
-    }
-    $talkback = "+PONG\r\n";
-    socket_write($sock, $talkback, strlen($talkback));
-    break;
-} while (true);
+$socket_accept = socket_accept($sock); // Wait for first client
 
-socket_close($sock);
+$buf = socket_read($socket_accept, 2048, PHP_NORMAL_READ);
+$talkback = "+PONG\r\n";
+socket_write($socket_accept, $talkback, strlen($talkback));
+
+socket_close($socket_accept);
 ?>
