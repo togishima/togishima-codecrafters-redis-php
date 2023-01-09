@@ -11,5 +11,15 @@ socket_bind($sock, "localhost", 6379);
 socket_listen($sock, 5);
 socket_accept($sock); // Wait for first client
 
-// socket_close($sock);
+do {
+    $buf = socket_read($sock, 2048, PHP_NORMAL_READ);
+    if (!$buf = trim($buf)) {
+        continue;
+    }
+    $talkback = "+PONG\r\n";
+    socket_write($sock, $talkback, strlen($talkback));
+    break;
+} while (true);
+
+socket_close($sock);
 ?>
