@@ -10,11 +10,16 @@ socket_set_option($sock, SOL_SOCKET, SO_REUSEPORT, 1);
 socket_bind($sock, "localhost", 6379);
 socket_listen($sock, 5);
 
-$socket_accept = socket_accept($sock); // Wait for first client
+$client = socket_accept($sock); // Wait for first client
 
-$buf = socket_read($socket_accept, 2048, PHP_NORMAL_READ);
-$talkback = "+PONG\r\n";
-socket_write($socket_accept, $talkback, strlen($talkback));
+$pingRequest = "*1\r\n$4\r\nping\r\n";
+while (true) {
+    $request = socket_read($client, strlen($pingRequest));
+    if ($pingRequest === $request) {
+        $pongResponse = "+PONG\r\n";
+        socket_send($client, $pongResponse, strlen($pongResponse), 0);
+    }
+}
 
 socket_close($socket_accept);
 ?>
